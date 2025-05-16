@@ -1,11 +1,12 @@
 <x-guest-layout>
     <div class="min-h-screen flex items-center justify-center bg-gray-100 px-6">
         <div class="w-full max-w-md bg-white rounded-2xl p-8 md:p-10 shadow-md space-y-6">
-            
+
             <!-- Clickable Logo -->
             <div class="text-center">
                 <a href="{{ url('/') }}">
-                    <img src="{{ asset('storage/hero-icon.svg') }}" alt="Welcome" class="w-16 h-16 mx-auto mb-4 hover:opacity-80 transition duration-200">
+                    <img src="{{ asset('images/hero-icon.svg') }}" alt="Welcome"
+                        class="w-16 h-16 mx-auto mb-4 hover:opacity-80 transition duration-200">
                 </a>
                 <h1 class="text-3xl font-bold text-indigo-600">Create an Account</h1>
                 <p class="text-sm text-gray-500 mt-1">Register to start rewarding your customers</p>
@@ -41,7 +42,8 @@
 
                 <!-- Confirm Password -->
                 <div>
-                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirm
+                        Password</label>
                     <input id="password_confirmation" name="password_confirmation" type="password" required
                         class="mt-1 w-full px-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-sm" />
                 </div>

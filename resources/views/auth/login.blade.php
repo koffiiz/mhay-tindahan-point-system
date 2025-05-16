@@ -4,7 +4,8 @@
 
             <div class="text-center">
                 <a href="{{ url('/') }}">
-                    <img src="{{ asset('storage/hero-icon.svg') }}" alt="Welcome" class="w-16 h-16 mx-auto mb-4 hover:opacity-80 transition duration-200">
+                    <img src="{{ asset('images/hero-icon.svg') }}" alt="Welcome"
+                        class="w-16 h-16 mx-auto mb-4 hover:opacity-80 transition duration-200">
                 </a>
                 <h1 class="text-3xl font-bold text-indigo-600">Welcome Back</h1>
                 <p class="text-sm text-gray-500 mt-1">Login to continue to your store dashboard</p>
@@ -36,7 +37,8 @@
                 <!-- Remember Me -->
                 <div class="flex items-center justify-between text-sm">
                     <label class="flex items-center space-x-2">
-                        <input type="checkbox" name="remember" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                        <input type="checkbox" name="remember"
+                            class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
                         <span>Remember me</span>
                     </label>
 
