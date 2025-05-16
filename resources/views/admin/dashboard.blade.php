@@ -98,6 +98,10 @@
                     class="inline-flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-xl shadow hover:bg-red-600 transition">
                     Quick Redeem
                 </button>
+                <button @click="openModal = 'check'"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600 transition">
+                    Check Points
+                </button>
             </div>
         </div>
 
@@ -148,6 +152,51 @@
             </table>
         </div>
 
+
+        <!-- Recent Transactions -->
+        <div class="bg-white p-6 rounded-xl shadow mt-10 overflow-x-auto">
+            <h2 class="text-lg font-semibold text-gray-700 mb-4">Recent Transactions</h2>
+            <table class="w-full text-sm text-left">
+                <thead class="text-xs text-gray-600 uppercase bg-gray-100">
+                    <tr>
+                        <th class="px-4 py-3">Customer</th>
+                        <th class="px-4 py-3">Type</th>
+                        <th class="px-4 py-3 text-center">Points</th>
+                        <th class="px-4 py-3">Description</th>
+                        <th class="px-4 py-3">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($recentTransactions as $trx)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-3">{{ $trx->user->name ?? '—' }}</td>
+                            <td class="px-4 py-3">
+                                <span
+                                    class="inline-block px-2 py-1 rounded-full text-xs font-semibold
+                            {{ $trx->type === 'earn' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                                    {{ ucfirst($trx->type) }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center font-medium">
+                                {{ $trx->points }}
+                            </td>
+                            <td class="px-4 py-3 text-gray-600">
+                                {{ $trx->description ?? '—' }}
+                            </td>
+                            <td class="px-4 py-3 text-gray-500">
+                                {{ $trx->created_at->format('M d, Y h:i A') }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center text-gray-400 py-4">No transactions yet.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+
         <!-- Modal Overlay -->
         <div x-show="openModal" x-transition x-cloak x-init="init()"
             class="fixed inset-0 bg-black/50 z-40 flex items-center justify-center">
@@ -155,88 +204,118 @@
             <!-- Modal Box -->
             <div @click.away="openModal = null" class="bg-white p-6 rounded-2xl shadow-xl w-full max-w-md z-50">
 
-                <h2 class="text-xl font-bold mb-4 text-gray-800"
-                    x-text="openModal === 'earn' ? 'Quick Earn Points' : 'Quick Redeem Points'">
-                </h2>
+                <!-- Earn / Redeem Form -->
+                <div x-show="openModal === 'earn' || openModal === 'redeem'">
+                    <h2 class="text-xl font-bold mb-4 text-gray-800"
+                        x-text="openModal === 'earn' ? 'Quick Earn Points' : 'Quick Redeem Points'">
+                    </h2>
 
-                <!-- QR + Search Customer -->
-                <div x-data="{ showScanner: false }" class="relative">
-                    <label class="text-sm font-medium text-gray-700">Select Customer</label>
+                    <!-- QR + Search Customer -->
+                    <div x-data="{ showScanner: false }" class="relative">
+                        <label class="text-sm font-medium text-gray-700">Select Customer</label>
 
-                    <!-- Search bar -->
-                    <input type="text" x-model="searchQuery" placeholder="Search name or email"
-                        class="w-full mt-1 p-2 border rounded" @focus="dropdownOpen = true"
-                        @blur="setTimeout(() => dropdownOpen = false, 200)">
+                        <input type="text" x-model="searchQuery" placeholder="Search name or email"
+                            class="w-full mt-1 p-2 border rounded" @focus="dropdownOpen = true"
+                            @blur="setTimeout(() => dropdownOpen = false, 200)">
 
-                    <!-- Dropdown -->
-                    <ul x-show="dropdownOpen && filteredCustomers.length"
-                        class="absolute bg-white border mt-1 w-full rounded shadow z-50 max-h-40 overflow-y-auto">
-                        <template x-for="customer in filteredCustomers" :key="customer.id">
-                            <li @click="selectCustomer(customer)" class="px-4 py-2 cursor-pointer hover:bg-gray-100"
-                                x-text="customer.name + ' (' + customer.email + ')'"></li>
+                        <ul x-show="dropdownOpen && filteredCustomers.length"
+                            class="absolute bg-white border mt-1 w-full rounded shadow z-50 max-h-40 overflow-y-auto">
+                            <template x-for="customer in filteredCustomers" :key="customer.id">
+                                <li @click="selectCustomer(customer)"
+                                    class="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                                    x-text="customer.name + ' (' + customer.email + ')'"></li>
+                            </template>
+                        </ul>
+
+                        <button type="button"
+                            @click="showScanner = !showScanner; if(showScanner) $nextTick(() => startQrScan('qr-reader'))"
+                            class="text-xs text-indigo-600 hover:underline mt-2 inline-block">
+                            <span x-show="!showScanner">📷 Scan QR Code</span>
+                            <span x-show="showScanner">❌ Hide Scanner</span>
+                        </button>
+
+                        <template x-if="showScanner">
+                            <div class="mt-4 rounded overflow-hidden">
+                                <div id="qr-reader" class="w-full h-60 border rounded"></div>
+                            </div>
                         </template>
-                    </ul>
-
-                    <!-- Toggle QR -->
-                    <button type="button" @click="showScanner = !showScanner"
-                        class="text-xs text-indigo-600 hover:underline mt-2 inline-block">
-                        <span x-show="!showScanner">📷 Scan QR Code</span>
-                        <span x-show="showScanner">❌ Hide Scanner</span>
-                    </button>
-
-                    <!-- QR Reader -->
-                    <div x-show="showScanner" class="mt-4 rounded overflow-hidden">
-                        <div id="qr-reader" class="w-full h-60 border rounded"></div>
                     </div>
+
+                    <!-- Earn / Redeem Form -->
+                    <form method="POST" action="{{ route('admin.points.store') }}" class="space-y-4 mt-6">
+                        @csrf
+                        <input type="hidden" name="type" :value="openModal">
+                        <input type="hidden" name="user_id" :value="selectedCustomer?.id">
+
+                        <!-- Amount -->
+                        <div x-show="openModal === 'earn'">
+                            <label class="text-sm font-medium text-gray-700">Amount Spent (₱)</label>
+                            <input type="number" name="amount" x-bind:disabled="openModal !== 'earn'"
+                                min="1" class="w-full mt-1 p-2 border rounded" required>
+                            <p class="text-xs text-gray-500 mt-1">₱{{ number_format($cashValuePerPoint, 2) }} = 1
+                                point</p>
+                        </div>
+
+                        <!-- Redeem Points -->
+                        <div x-show="openModal === 'redeem'">
+                            <label class="text-sm font-medium text-gray-700">Points to Redeem</label>
+                            <input type="number" name="points" x-bind:disabled="openModal !== 'redeem'"
+                                step="0.01" min="0.01" class="w-full mt-1 p-2 border rounded" required>
+                            <p class="text-xs text-gray-500 mt-1">
+                                Available:
+                                <span class="font-semibold"
+                                    x-text="(selectedCustomer?.points ?? 0).toFixed(2)"></span> points
+                            </p>
+                        </div>
+
+                        <!-- Optional Note -->
+                        <div>
+                            <label class="text-sm font-medium text-gray-700">Description (optional)</label>
+                            <input type="text" name="description" class="w-full mt-1 p-2 border rounded">
+                        </div>
+
+                        <!-- Footer -->
+                        <div class="flex justify-between items-center pt-4">
+                            <button type="button" @click="openModal = null"
+                                class="px-4 py-2 bg-gray-100 text-sm text-gray-700 rounded hover:bg-gray-200">
+                                Cancel
+                            </button>
+                            <button type="submit"
+                                class="px-4 py-2 bg-indigo-600 text-sm text-white rounded hover:bg-indigo-700">
+                                Submit
+                            </button>
+                        </div>
+                    </form>
                 </div>
 
-                <!-- Point Form -->
-                <form method="POST" action="{{ route('admin.points.store') }}" class="space-y-4 mt-6">
-                    @csrf
-                    <input type="hidden" name="type" :value="openModal">
-                    <input type="hidden" name="user_id" :value="selectedCustomer?.id">
+                <!-- Check Points Modal -->
+                <div x-show="openModal === 'check'" x-cloak>
+                    <h2 class="text-xl font-bold mb-4 text-gray-800">Check Points</h2>
 
+                    <div class="text-sm text-gray-600">Scan a customer QR code to view their points.</div>
 
-                    <div x-show="openModal === 'earn'">
-                        <label class="text-sm font-medium text-gray-700">Amount Spent (₱)</label>
-                        <input type="number" name="amount" x-bind:disabled="openModal !== 'earn'"
-                            min="1" class="w-full mt-1 p-2 border rounded" required>
-                        <p class="text-xs text-gray-500 mt-1">₱{{ number_format($cashValuePerPoint, 2) }} = 1 point
-                        </p>
-                    </div>
+                    <template x-if="showScanner">
+                        <div class="mt-4 rounded overflow-hidden">
+                            <div id="qr-check-reader" class="w-full h-60 border rounded"></div>
+                        </div>
+                    </template>
 
+                    <template x-if="selectedCustomer">
+                        <div class="mt-4 text-center">
+                            <h3 class="text-lg font-semibold text-indigo-700" x-text="selectedCustomer.name"></h3>
+                            <p class="text-sm text-gray-600">Available Points:</p>
+                            <p class="text-2xl font-bold text-indigo-600" x-text="selectedCustomer.points.toFixed(2)">
+                            </p>
+                        </div>
+                    </template>
 
-                    <!-- Points (Redeem) -->
-                    <div x-show="openModal === 'redeem'">
-                        <label class="text-sm font-medium text-gray-700">Points to Redeem</label>
-                        <input type="number" name="points" x-bind:disabled="openModal !== 'redeem'"
-                            step="0.01" min="0.01" class="w-full mt-1 p-2 border rounded" required>
-                        <p class="text-xs text-gray-500 mt-1">
-                            Available: <span class="font-semibold"
-                                x-text="(selectedCustomer?.points ?? 0).toFixed(2)"></span>
-                            points
-                        </p>
-                    </div>
-
-
-                    <!-- Optional Description -->
-                    <div>
-                        <label class="text-sm font-medium text-gray-700">Description (optional)</label>
-                        <input type="text" name="description" class="w-full mt-1 p-2 border rounded">
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="flex justify-between items-center pt-4">
-                        <button type="button" @click="openModal = null"
+                    <div class="flex justify-end pt-4">
+                        <button @click="openModal = null"
                             class="px-4 py-2 bg-gray-100 text-sm text-gray-700 rounded hover:bg-gray-200">
-                            Cancel
-                        </button>
-                        <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-sm text-white rounded hover:bg-indigo-700">
-                            Submit
+                            Close
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
 
@@ -300,49 +379,124 @@
                 },
 
                 init() {
-                    this.$watch('openModal', (value) => {
-                        if ((value === 'earn' || value === 'redeem') && !this.qrScanner) {
-                            this.startQrScan();
+                    this.$watch('openModal', async (value) => {
+                        this.selectedCustomer = null;
+                        this.showScanner = false;
+
+                        if (!value && this.qrScanner) {
+                            try {
+                                await this.qrScanner.stop();
+                                await this.qrScanner.clear();
+                            } catch (e) {
+                                console.warn('Scanner teardown error:', e);
+                            } finally {
+                                this.qrScanner = null;
+                            }
+                        }
+
+                        if (value === 'check') {
+                            this.showScanner = true;
+                            this.$nextTick(() => this.startQrScan('qr-check-reader', true));
+                        }
+
+                        if (value === 'earn' || value === 'redeem') {
+                            this.showScanner = false; // toggled manually
+                            this.$nextTick(() => this.startQrScan('qr-reader'));
                         }
                     });
                 },
 
-                startQrScan() {
+                async startQrScan(containerId, checkOnly = false) {
                     const self = this;
-                    if (this.qrScanner) return;
-                    this.qrScanner = new Html5Qrcode("qr-reader");
-                    this.qrScanner.start({
-                            facingMode: "environment"
-                        }, {
-                            fps: 10,
-                            qrbox: 200
-                        },
-                        function(decodedText) {
-                            const token = decodedText.split('=')[1];
-                            const found = self.customers.find(c => c.qr_token === token);
-                            if (found) {
-                                self.selectCustomerFromQR(found);
-                                self.qrScanner.stop();
-                                self.qrScanner.clear();
-                                self.qrScanner = null;
-                            } else {
-                                alert('Customer not found.');
-                            }
-                        },
-                        function(error) {
-                            console.warn("QR error", error);
+
+
+                    // ✅ Always stop & clear previous scanner first
+                    if (this.qrScanner) {
+                        await this.qrScanner.stop().catch(() => {});
+                        await this.qrScanner.clear().catch(() => {});
+                        this.qrScanner = null;
+                    }
+
+
+                    const qrContainer = document.getElementById(containerId);
+                    if (!qrContainer || qrContainer.offsetWidth === 0 || qrContainer.offsetHeight === 0) {
+                        console.warn("QR container not ready");
+                        return;
+                    }
+
+                    this.qrScanner = new Html5Qrcode(containerId);
+
+                    Html5Qrcode.getCameras().then(devices => {
+                        if (!devices || devices.length === 0) {
+                            alert("No cameras found.");
+                            return;
                         }
-                    );
+
+                        const defaultCameraId = devices[0].id;
+                        self.qrScanner.start(
+                            defaultCameraId, {
+                                fps: 10,
+                                qrbox: {
+                                    width: 250,
+                                    height: 250
+                                }
+                            },
+                            (decodedText) => {
+                                let token = decodedText.trim();
+                                if (token.includes('=')) token = token.split('=').pop();
+
+                                const found = self.customers.find(c => c.qr_token === token);
+                                if (found) {
+                                    // Only auto-fill search input and toast on earn/redeem
+                                    if (!checkOnly) {
+                                        self.selectCustomerFromQR(
+                                            found); // sets selectedCustomer & searchQuery
+                                        self.showSuccessToast();
+                                        self.showScanner = false;
+                                    } else {
+                                        self.selectedCustomer = found; // checkPoints only
+                                        self.showScanner = false;
+
+                                    }
+
+                                    self.qrScanner.stop().then(() => {
+                                        self.qrScanner.clear();
+                                        self.qrScanner = null;
+                                    });
+                                } else {
+                                    alert('Customer not found.');
+                                }
+                            },
+                            (errorMessage) => {
+                                // Optional: console.warn("QR Scan Error", errorMessage);
+                            }
+                        ).catch(err => {
+                            console.error("Camera start failed:", err);
+                            alert("Unable to start QR scan: " + err);
+                        });
+                    }).catch(err => {
+                        console.error("getCameras() failed:", err);
+                        alert("Camera access failed.");
+                    });
                 },
 
                 stopQrScan() {
                     if (this.qrScanner) {
-                        this.qrScanner.stop();
-                        this.qrScanner.clear();
-                        this.qrScanner = null;
+                        this.qrScanner.stop()
+                            .then(() => {
+                                return this.qrScanner.clear();
+                            })
+                            .then(() => {
+                                this.qrScanner = null;
+                            })
+                            .catch(error => {
+                                console.error("Error stopping scanner:", error);
+                            });
                     }
                 }
             }
         }
     </script>
+
+
 </x-app-layout>

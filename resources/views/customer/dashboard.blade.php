@@ -26,6 +26,7 @@
             <!-- Points Summary -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="bg-white p-4 rounded-xl shadow text-center">
+                    <h3 class="text-lg font-semibold text-gray-700">Current Points</h3>
                     <div class="flex items-center justify-center gap-1 mb-1">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-yellow-500" fill="currentColor"
                             viewBox="0 0 20 20">

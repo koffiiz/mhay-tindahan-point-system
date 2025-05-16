@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Sari-Sari Store') }}</title>
+    <title>{{ config('app.name', 'Mhay Points') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
@@ -20,7 +20,7 @@
         <!-- Top Navbar (Optional Global Layout Header) -->
         <nav class="bg-white border-b shadow-sm sticky top-0 z-20">
             <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-                <a href="/" class="text-indigo-600 font-bold text-lg hover:underline">Mhay Tindahan</a>
+                <a href="/" class="text-indigo-600 font-bold text-lg hover:underline">Mhay Points</a>
 
                 <div class="flex items-center space-x-4">
                     <span class="text-sm hidden sm:inline">Hello, {{ Auth::user()->name }}</span>

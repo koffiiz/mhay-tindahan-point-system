@@ -17,7 +17,8 @@ class AdminDashboardController extends Controller
             'pointsIssued' => PointTransaction::where('type', 'earn')->sum('points'),
             'redemptions' => PointTransaction::where('type', 'redeem')->sum('points'),
             'customers' => User::where('role', 'customer')->get(), 
-            'cashValuePerPoint' => Setting::get('redeem_point_value')
+            'cashValuePerPoint' => Setting::get('redeem_point_value'),
+            'recentTransactions' => PointTransaction::with('user')->latest()->take(10)->get()
         ]);
     }
 

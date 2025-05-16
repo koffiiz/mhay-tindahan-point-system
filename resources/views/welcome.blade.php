@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Sari-Sari Store Points</title>
+    <title>Mhay Points</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
@@ -13,7 +13,7 @@
 
         <!-- Header -->
         <header class="flex justify-between items-center px-6 py-4 bg-white/50 backdrop-blur-sm border-b shadow-sm">
-            <h1 class="text-xl font-bold text-indigo-600">Sari-Sari Store</h1>
+            <h1 class="text-xl font-bold text-indigo-600">Mhay Points</h1>
             <nav class="space-x-4">
                 @auth
                     <a href="{{ route('dashboard') }}" class="text-sm font-medium hover:underline">Dashboard</a>
