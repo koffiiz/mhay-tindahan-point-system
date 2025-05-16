@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sari-Sari Store Points</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+
 <body class="h-full bg-gradient-to-br from-indigo-100 via-blue-50 to-white text-gray-800 antialiased">
     <div class="min-h-screen flex flex-col">
 
@@ -21,7 +23,8 @@
                     </form>
                 @else
                     <a href="{{ route('login') }}" class="text-sm font-medium hover:underline">Login</a>
-                    <a href="{{ route('register') }}" class="text-sm font-medium text-indigo-600 hover:underline">Register</a>
+                    <a href="{{ route('register') }}"
+                        class="text-sm font-medium text-indigo-600 hover:underline">Register</a>
                 @endauth
             </nav>
         </header>
@@ -30,19 +33,22 @@
         <main class="flex flex-col md:flex-row items-center justify-center flex-1 px-6 py-16 max-w-7xl mx-auto gap-10">
             <!-- SVG on Left (inline SVG content) -->
             <div class="w-full md:w-1/2 max-w-md">
-                <img src="{{ asset('storage/hero-icon.svg') }}" alt="Welcome" class="w-full h-auto">
+                <img src="{{ asset('images/hero-icon.svg') }}" alt="Welcome" class="w-full h-auto">
             </div>
 
             <!-- Text Content on Right -->
             <div class="w-full md:w-1/2 text-center md:text-left">
                 <h2 class="text-4xl md:text-5xl font-extrabold text-indigo-700 mb-4">Reward Loyal Customers</h2>
-                <p class="text-gray-600 text-lg mb-6">Turn every purchase into points and give back to your community. Build loyalty with ease using a digital sari-sari store rewards system.</p>
+                <p class="text-gray-600 text-lg mb-6">Turn every purchase into points and give back to your community.
+                    Build loyalty with ease using a digital sari-sari store rewards system.</p>
                 @auth
-                    <a href="{{ route('dashboard') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow transition">
+                    <a href="{{ route('dashboard') }}"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow transition">
                         Go to Dashboard
                     </a>
                 @else
-                    <a href="{{ route('register') }}" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow transition">
+                    <a href="{{ route('register') }}"
+                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-xl font-medium shadow transition">
                         Get Started
                     </a>
                 @endauth
@@ -56,4 +62,5 @@
 
     </div>
 </body>
+
 </html>
