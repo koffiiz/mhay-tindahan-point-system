@@ -296,8 +296,8 @@
 
                     <template x-if="showScanner">
                         <div class="mt-4 rounded overflow-hidden">
-                            <div id="qr-check-reader" class="w-full h-60 border rounded"></div>
-                        </div>
+                            <div id="qr-check-reader" class="w-full h-60 border rounded">
+                            </div>
                     </template>
 
                     <template x-if="selectedCustomer">
@@ -435,9 +435,12 @@
                         self.qrScanner.start(
                             defaultCameraId, {
                                 fps: 10,
-                                qrbox: {
-                                    width: 250,
-                                    height: 250
+                                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                                    return {
+                                        width: minEdge * 0.9,
+                                        height: minEdge * 0.9
+                                    };
                                 }
                             },
                             (decodedText) => {
