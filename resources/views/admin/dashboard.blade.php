@@ -439,7 +439,7 @@
                                     const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
                                     return {
                                         width: minEdge * 0.9,
-                                        height: minEdge * 0.9
+                                        height: minEdge * 0.95
                                     };
                                 }
                             },
