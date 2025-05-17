@@ -409,7 +409,6 @@
                 async startQrScan(containerId, checkOnly = false) {
                     const self = this;
 
-
                     // ✅ Always stop & clear previous scanner first
                     if (this.qrScanner) {
                         await this.qrScanner.stop().catch(() => {});
@@ -432,7 +431,7 @@
                             return;
                         }
 
-                        const defaultCameraId = devices[0].id;
+                        const defaultCameraId = devices[1].id;
                         self.qrScanner.start(
                             defaultCameraId, {
                                 fps: 10,
