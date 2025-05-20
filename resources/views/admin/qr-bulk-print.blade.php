@@ -8,87 +8,124 @@
 
     <style>
         @media print {
-            .no-print {
-                display: none;
+            @page {
+                size: A4;
+                margin: 1cm;
             }
 
             body {
-                margin: 0;
-                background: white;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                margin: 0 !important;
+                /* ❌ remove this ↓ */
+                /* background: white !important; */
             }
 
-            .print-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(336px, 1fr));
-                gap: 1.5rem;
-                justify-items: center;
-                padding: 0;
+            .no-print {
+                display: none !important;
             }
+
+            .page-break {
+                page-break-after: always;
+            }
+
         }
 
-        .id-card {
-            width: 100%;
+        .card-wrapper {
+            background-color: #eef2ff;
+            /* Tailwind's indigo-50 */
+            color: #1f2937;
+            /* neutral dark slate */
+            border: 1px solid #c7d2fe;
+            /* soft indigo border */
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            font-family: sans-serif;
             max-width: 336px;
-            height: auto;
             aspect-ratio: 336 / 212;
-            background: #ffffff;
-            color: #1e3a8a;
-            border: 1px solid #d1d5db;
+            overflow: hidden;
         }
 
         .card-header {
             background-color: #3b82f6;
+            /* Tailwind blue-500 */
             color: white;
+            border-bottom: 1px solid #93c5fd;
+            /* Tailwind blue-300 */
+            padding: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
-        .card-inner {
-            padding: 0.75rem;
+        .card-body {
             display: flex;
             flex-direction: row;
-            align-items: center;
-            height: calc(100% - 2.5rem);
+            gap: 1rem;
+            padding: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .card-body .qr-box {
+            padding: 0.5rem;
+            background-color: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.375rem;
+            height: fit-content;
+        }
+
+        .card-body .info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
     </style>
 </head>
 
-<body class="bg-gray-100 py-8 px-4 print:p-0">
+<body class="bg-gray-100 py-8 px-4 pb-24 print:pb-0">
 
-    <!-- Cards Container -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center print-grid">
-        @foreach ($customers as $customer)
-            <div class="id-card rounded-xl shadow-md overflow-hidden text-[11px] font-sans relative print:shadow-none">
-                <!-- Header -->
-                <div class="card-header text-center py-1.5 uppercase font-bold text-sm tracking-wide">
-                    Mhay Tindahan Loyalty Card
-                </div>
-
-                <!-- Body -->
-                <div class="card-inner">
-                    <!-- QR Code -->
-                    <div class="w-[90px] h-[90px] flex items-center justify-center border rounded-md shadow">
-                        {!! QrCode::size(80)->generate('token=' . $customer->qr_token) !!}
+    <!-- Grouped and paginated every 8 cards -->
+    @foreach ($customers->chunk(8) as $group)
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center print:grid-cols-2 mb-10">
+            @foreach ($group as $customer)
+                <div class="card-wrapper">
+                    <div class="card-header">
+                        Mhay Tindahan Loyalty Card
                     </div>
+                    <div class="card-body">
+                        <!-- QR Code -->
+                        <div class="qr-box">
+                            {!! QrCode::size(80)->generate('token=' . $customer->qr_token) !!}
+                        </div>
 
-                    <!-- Info -->
-                    <div class="ml-4 flex-1 text-gray-800 text-[10.5px] leading-tight space-y-1">
-                        <p class="text-sm font-bold text-blue-700">{{ $customer->name }}</p>
-                        <p class="text-gray-600">{{ $customer->email }}</p>
-                        <p class="text-[10px] text-gray-500">
-                            Show this card to earn or redeem points.<br>
-                            <span class="text-blue-600 font-semibold">1 Mhay Point = ₱1</span>
-                        </p>
-
-                        <p class="text-[9px] text-gray-400">
-                            Visit: <span class="text-blue-700 font-medium">www.mhaypoints.com</span>
-                        </p>
+                        <!-- Info -->
+                        <div class="info">
+                            <p style="font-weight: 600; font-size: 1rem;">{{ $customer->name }}</p>
+                            <p style="color: #6b7280; font-size: 0.75rem;">{{ $customer->email }}</p>
+                            <p style="font-size: 0.75rem; color: #374151;">
+                                Show this card to earn or redeem points.<br>
+                                <strong>1 Mhay Point = ₱1</strong>
+                            </p>
+                            <p style="font-size: 0.7rem; color: #6b7280;">
+                                Visit: <span style="color: #1f2937;">www.mhaypoints.com</span>
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        @endforeach
-    </div>
+            @endforeach
+        </div>
 
+        @if (!$loop->last)
+            <div class="page-break"></div>
+        @endif
+    @endforeach
+
+    <!-- Fixed Print Button -->
     <div class="fixed bottom-0 left-0 w-full no-print z-50 bg-white border-t border-gray-200">
         <button onclick="window.print()"
             class="w-full text-sm px-4 py-3 bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 transition">
