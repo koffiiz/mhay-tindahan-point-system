@@ -102,6 +102,10 @@
                     class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-xl shadow hover:bg-blue-600 transition">
                     Check Points
                 </button>
+                <a href="{{ route('admin.customers.qr.index') }}"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl shadow hover:bg-purple-700 transition">
+                    🖨️ Bulk QR Print
+                </a>
             </div>
         </div>
 

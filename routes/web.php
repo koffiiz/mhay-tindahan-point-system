@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\CustomerDashboardController;
 use App\Http\Controllers\AdminSettingController;
+use App\Http\Controllers\CustomerQRController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,6 +26,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/points', [AdminDashboardController::class, 'storePoints'])->name('points.store');
     Route::get('/settings', [AdminSettingController::class, 'edit'])->name('settings.edit');
     Route::post('/settings', [AdminSettingController::class, 'update'])->name('settings.update');
+    Route::get('/customers/print', [CustomerQRController::class, 'index'])->name('customers.qr.index');
+    Route::post('/customers/print/bulk', [CustomerQRController::class, 'bulkPrint'])->name('customers.qr.bulk');
 });
 
 

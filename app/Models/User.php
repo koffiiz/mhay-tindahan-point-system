@@ -59,7 +59,11 @@ class User extends Authenticatable
 
     public function getTotalPointsAttribute()
     {
-        return $this->pointTransactions->sum(fn ($pt) => $pt->type === 'earn' ? $pt->points : -$pt->points);
+        $total = $this->pointTransactions->sum(fn ($pt) =>
+        $pt->type === 'earn' ? $pt->points : -$pt->points
+        );
+
+        return number_format($total, 2, '.', '');
     }
 
 }
